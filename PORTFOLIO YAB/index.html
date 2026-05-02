@@ -361,9 +361,9 @@
               Projects</span></div>
         </div>
 
-        <!-- ═══ CONTACT FORM — posts to Cloudflare Worker ═══ -->
+        <!-- ═══ CONTACT FORM — Formspree ═══ -->
         <form class="contact-form reveal" id="contactForm" method="POST"
-          action="https://ontact-form-worker.yassine-boussemha.workers.dev/">
+          action="https://formspree.io/f/mjglkdoe">
           <div class="form-row">
             <div class="form-group"><label data-i18n="form_name">Full Name</label><input type="text" id="formName"
                 name="name" required></div>
@@ -437,72 +437,7 @@
   <script src="translations.js"></script>
   <script src="script.js"></script>
 
-  <!-- ═══════════ CONTACT FORM — Cloudflare Worker AJAX ═══════════ -->
-  <script>
-    (function () {
-      // ── Your Cloudflare Worker URL ──────────────────────────────────────
-      var WORKER_URL = 'https://ontact-form-worker.yassine-boussemha.workers.dev/';
-      // ───────────────────────────────────────────────────────────────────
 
-      var form = document.getElementById('contactForm');
-      var submitBtn = document.getElementById('submitBtn');
-      var successMsg = document.getElementById('formSuccess');
-      var errorMsg = document.getElementById('formError');
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault(); // stop normal page redirect
-
-        // Hide old messages
-        successMsg.style.display = 'none';
-        errorMsg.style.display = 'none';
-
-        // Show sending state on button
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Sending… <i class="fas fa-spinner fa-spin"></i>';
-
-        // Collect every field into a plain object
-        var formData = new FormData(form);
-        var payload = {};
-        formData.forEach(function (value, key) { payload[key] = value; });
-
-        // POST to the Worker as JSON
-        fetch(WORKER_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        })
-          .then(function (res) { return res.json(); })
-          .then(function (data) {
-            if (data.ok) {
-              // ✅ Success
-              successMsg.style.display = 'block';
-              form.reset();
-              setTimeout(function () { successMsg.style.display = 'none'; }, 10000);
-            } else {
-              // ⚠️ Worker returned an error
-              console.error('Worker error:', data.error);
-              errorMsg.style.display = 'block';
-            }
-          })
-          .catch(function (err) {
-            // ⚠️ Network / CORS error
-            console.error('Fetch error:', err);
-            errorMsg.style.display = 'block';
-          })
-          .finally(function () {
-            submitBtn.disabled = false;
-            // Restore button label (works with i18n too)
-            var label = (window.T && window.currentLang && window.T[window.currentLang])
-              ? (window.T[window.currentLang].form_submit || 'Send Message')
-              : 'Send Message';
-            submitBtn.innerHTML = label + ' <i class="fas fa-paper-plane"></i>';
-          });
-      });
-    })();
-  </script>
 
 </body>
 
